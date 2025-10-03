@@ -1,15 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Manrope as ManropeSans, DM_Mono as DMMono, Italiana as ItalianaSans, DM_Sans as DMSans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geistSans = ManropeSans({
+  variable: "--font-manrope-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const geistMono = DMMono({
+  variable: "--font-manrope-mono",
   subsets: ["latin"],
+  weight: "400",
+});
+
+const itallianaSans = ItalianaSans({
+  variable: "--font-italiana-sans",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const dmSans = DMSans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -25,8 +38,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${itallianaSans.variable} ${dmSans.variable} antialiased`}
       >
+        <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/20 backdrop-blur">
+          <div className="nav-wrap flex mx-auto px-4 py-3">
+            <span className="text-sm font-medium text-[#FFCAD4]">Your personalized Ai Tutor, Making you NOT Dumb.</span>
+          </div>
+        </header>
         {children}
       </body>
     </html>
