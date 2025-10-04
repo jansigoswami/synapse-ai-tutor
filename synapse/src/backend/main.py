@@ -127,7 +127,7 @@ async def call_cerebras_api(messages: List[dict], user_context: dict = None) -> 
     }
     
     payload = {
-        "model": "llama-3.3-70b",  # Use a valid model name
+        "model": "llama-4-scout-17b-16e-instruct",  # Use a valid model name
         "messages": api_messages,
         "temperature": 0.7,
         "max_tokens": 1000,
