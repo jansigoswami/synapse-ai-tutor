@@ -1,6 +1,11 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, Copy, Check } from 'lucide-react';
+import CodeInterface from './CodeInterface';
+// Component to render message content with code blocks
+
+
+
 
 export default function SynapseChat() {
   const [showSplash, setShowSplash] = useState(true);
@@ -23,8 +28,6 @@ export default function SynapseChat() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  // Splash remains until user clicks continue
 
   useEffect(() => {
     scrollToBottom();
@@ -155,7 +158,6 @@ export default function SynapseChat() {
       }
     };
     return (
-
       <div className="greetings">
         <div className={`container ${isFadingOut ? 'animate-fade-out' : 'animate-fade'} text-center`}>
           <div className="wrapper-head">
@@ -166,7 +168,6 @@ export default function SynapseChat() {
               <div className="col-1">
                 <div className="main-head">Glad to see you again!</div>
                 <div className="sub-head">What would you like to learn today?</div>
-                {/* <p className="sm-desc" style={{ marginTop: '1rem' }}>Loading chat interface…</p> */}
               </div>
               <div className="col-2" style={{ marginTop: '1.25rem' }}>
                 <form onSubmit={handleFirstWordSubmit} className="flex items-center gap-2 justify-end">
@@ -189,13 +190,11 @@ export default function SynapseChat() {
               </div>
             </div>
           </div>
-          
         </div>
       </div>
     );
   }
 
-  // Landing state: input centered like ChatGPT before first message
   if (!hasStarted) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -231,57 +230,43 @@ export default function SynapseChat() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Header */}
-      {/* <div className="bg-black border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-100">Synapse</h1>
-              <p className="text-sm text-gray-500">Your AI Coding Tutor</p>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-
-      
+    <div className="flex flex-col h-[90vh]">
       <div className="chat-container">
-        
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
             {messages.map((message, index) => (
-              <div key={index} className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row' }`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 
-                    ${message.role === 'user'
-                      ? 'bg-indigo-500'
-                      : 'bg-gradient-to-br from-purple-500 to-indigo-600'
-                    }`}>
+              <div key={index} className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`user-img w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.role === 'user' ? 'bg-indigo-500' : 'bg-gradient-to-br from-purple-500 to-indigo-600'}`}>
                   {message.role === 'user' ? (
                     <User className="w-5 h-5 text-white" />
                   ) : (
                     <Bot className="w-5 h-5 text-white" />
                   )}
                 </div>
-                <div
-                  className={`flex-1 max-w-2xl ${message.role === 'user' ? 'text-right' : 'text-left'}`}
-                >
-                  <div
-                    className={`inline-block ${message.role === 'user' ? 'px-4 py-3' : 'pr-4 pl-2 py-0'} rounded-2xl ${message.role === 'user' ? 'bg-[#631330] text-white' : 'bg-transparent text-white'}`}
-                    style={{ fontFamily: 'var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif' }}
-                  >
-                    <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1 px-2">
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
+                <div className={`flex-1 max-w-2xl ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                  {message.role === 'assistant' ? (
+                    <div className="backdrop-blur bg-[#ffc8d226] text-white text-sm px-4 py-3 rounded-xl space-y-2">
+                      <CodeInterface content={message.content} />
+                      <p className="text-xs text-[#631330]">
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="inline-block px-4 py-3 rounded-2xl bg-[#631330] text-sm text-white" style={{ fontFamily: 'var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif' }}>
+                        <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1 px-2">
+                        {message.timestamp.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
@@ -300,36 +285,32 @@ export default function SynapseChat() {
             <div ref={messagesEndRef} />
           </div>
         </div>
-
-
-        {/* Input */}
-        <div className="bg-white border-t border-gray-200 shadow-lg transition-smooth">
-          <div className="max-w-4xl mx-auto px-4 py-4">
-            <form onSubmit={sendMessage} className="flex gap-3">
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask me anything about coding..."
-                disabled={isLoading}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
-              >
-                <Send className="w-5 h-5" />
-                Send
-              </button>
-            </form>
-            <p className="text-xs text-gray-400 mt-2 text-center">
-              Backend running on http://localhost:8000
-            </p>
+        
+        <div className="chatbox-input flex w-full items-center justify-center">
+          <div className="w-3xl border-1 border-[#ffcad45d] rounded-xl backdrop-blur shadow-lg transition-smooth">
+            <div className="mx-auto px-4 py-4">
+              <form onSubmit={sendMessage} className="flex gap-3">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask me anything about coding..."
+                  disabled={isLoading}
+                  className="flex-1 px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#ffcad45d] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-smooth"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isLoading}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
+                >
+                  <Send className="w-5 h-5" />
+                  Send
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );
-}
+  )};
