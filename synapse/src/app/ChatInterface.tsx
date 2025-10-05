@@ -4,7 +4,15 @@ import { Send, Bot, User, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 // Component to render markdown content with typing effect
-const TypingMarkdown = ({ content, isTyping, onTypingComplete }) => {
+const TypingMarkdown = ({ 
+  content, 
+  isTyping, 
+  onTypingComplete 
+}: { 
+  content: string; 
+  isTyping: boolean; 
+  onTypingComplete?: () => void;
+}) => {
   const [displayedContent, setDisplayedContent] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -30,7 +38,7 @@ const TypingMarkdown = ({ content, isTyping, onTypingComplete }) => {
     <div className="prose prose-sm max-w-none prose-invert">
       <ReactMarkdown
         components={{
-          code: ({ node, inline, className, children, ...props }) => {
+          code: ({ node, inline, className, children, ...props }: any) => {
             return inline ? (
               <code className="bg-gray-800 text-pink-300 px-1 py-0.5 rounded text-xs" {...props}>
                 {children}
@@ -43,19 +51,19 @@ const TypingMarkdown = ({ content, isTyping, onTypingComplete }) => {
               </pre>
             );
           },
-          p: ({ children }) => <p className="mb-2 last:mb-0 text-white">{children}</p>,
-          ul: ({ children }) => <ul className="list-disc list-inside mb-2 text-white">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 text-white">{children}</ol>,
-          li: ({ children }) => <li className="mb-1 text-white">{children}</li>,
-          h1: ({ children }) => <h1 className="text-xl font-bold mb-2 text-white">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-lg font-bold mb-2 text-white">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-base font-bold mb-2 text-white">{children}</h3>,
-          strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
-          em: ({ children }) => <em className="italic text-white">{children}</em>,
-          blockquote: ({ children }) => (
+          p: ({ children }: any) => <p className="mb-2 last:mb-0 text-white">{children}</p>,
+          ul: ({ children }: any) => <ul className="list-disc list-inside mb-2 text-white">{children}</ul>,
+          ol: ({ children }: any) => <ol className="list-decimal list-inside mb-2 text-white">{children}</ol>,
+          li: ({ children }: any) => <li className="mb-1 text-white">{children}</li>,
+          h1: ({ children }: any) => <h1 className="text-xl font-bold mb-2 text-white">{children}</h1>,
+          h2: ({ children }: any) => <h2 className="text-lg font-bold mb-2 text-white">{children}</h2>,
+          h3: ({ children }: any) => <h3 className="text-base font-bold mb-2 text-white">{children}</h3>,
+          strong: ({ children }: any) => <strong className="font-bold text-white">{children}</strong>,
+          em: ({ children }: any) => <em className="italic text-white">{children}</em>,
+          blockquote: ({ children }: any) => (
             <blockquote className="border-l-4 border-gray-400 pl-4 italic my-2 text-white">{children}</blockquote>
           ),
-          a: ({ children, href }) => (
+          a: ({ children, href }: any) => (
             <a href={href} className="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">
               {children}
             </a>
@@ -68,14 +76,29 @@ const TypingMarkdown = ({ content, isTyping, onTypingComplete }) => {
   );
 };
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  isTyping?: boolean;
+}
+
+interface ChatInterfaceProps {
+  userName: string;
+  selectedLanguage: string;
+  selectedDuration: string;
+  selectedHours: string;
+  initialMessages?: Message[];
+}
+
 export default function ChatInterface({ 
   userName, 
   selectedLanguage, 
   selectedDuration, 
   selectedHours,
   initialMessages 
-}) {
-  const [messages, setMessages] = useState(initialMessages || [
+}: ChatInterfaceProps) {
+  const [messages, setMessages] = useState<Message[]>(initialMessages || [
     {
       role: 'assistant',
       content: `Hi ${userName}! I'm Synapse, your AI coding tutor. Let's start learning ${selectedLanguage}!`,
@@ -85,9 +108,9 @@ export default function ChatInterface({
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [typingMessageIndex, setTypingMessageIndex] = useState(null);
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const [typingMessageIndex, setTypingMessageIndex] = useState<number | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -97,18 +120,18 @@ export default function ChatInterface({
     scrollToBottom();
   }, [messages, typingMessageIndex]);
 
-  const handleTypingComplete = (index) => {
+  const handleTypingComplete = (index: number) => {
     setMessages(prev => prev.map((msg, i) => 
       i === index ? { ...msg, isTyping: false } : msg
     ));
     setTypingMessageIndex(null);
   };
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage = {
+    const userMessage: Message = {
       role: 'user',
       content: input,
       timestamp: new Date(),
@@ -146,7 +169,7 @@ export default function ChatInterface({
 
       const data = await response.json();
 
-      const assistantMessage = {
+      const assistantMessage: Message = {
         role: 'assistant',
         content: data.response,
         timestamp: new Date(),
@@ -160,7 +183,7 @@ export default function ChatInterface({
       });
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage = {
+      const errorMessage: Message = {
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please make sure the backend server is running on http://localhost:8000',
         timestamp: new Date(),
@@ -192,7 +215,7 @@ export default function ChatInterface({
                     <div className="backdrop-blur bg-[#ffc8d226] text-white text-sm px-4 py-3 rounded-xl space-y-2">
                       <TypingMarkdown 
                         content={message.content} 
-                        isTyping={message.isTyping}
+                        isTyping={message.isTyping ?? false}
                         onTypingComplete={() => handleTypingComplete(index)}
                       />
                       <p className="text-xs text-[#631330]">
