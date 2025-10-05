@@ -57,7 +57,7 @@ body {
 
 .synapse-head {
   font-family: var(--font-italiana-sans), ui-serif, Georgia, serif;
-  font-size: 12.2rem;
+  font-size: 10.2rem;
   font-weight: 400;
   letter-spacing: -0.06em;
   line-height: 1;
@@ -68,25 +68,19 @@ body {
   height: 80vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: start;
-  gap: 1.5rem;
+  justify-content: start;
+  align-items: center;
+  gap: 5.5rem;
 }
 
-.wrapper-in {
-  width: 100%;
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-}
 
-.col-1 {
+/* .col-1 {
   display: flex;
   flex-direction: column;
   align-items: start;
   justify-content: center;
   gap: 0.3rem;
-}
+} */
 
 .main-head {
   font-size: 1.6rem;
