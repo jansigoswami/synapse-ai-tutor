@@ -1,6 +1,6 @@
 # Synapse AI Tutor
 
-![Synapse AI Tutor Banner](./synapse/public/images/main-background-3.png)
+![Synapse AI Tutor Banner](./synapse/public/images/synapse.png)
 
 ## 🚀 Overview
 
@@ -103,3 +103,4 @@ This project is licensed under the MIT License.
 
 - Developed by [jansigoswami](https://github.com/jansigoswami)
 - Powered by Next.js, React, and FastAPI
+
