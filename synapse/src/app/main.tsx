@@ -4,9 +4,16 @@ import { Send, Bot, User, Loader2, Copy, Check } from 'lucide-react';
 import ChatInterface from './ChatInterface';
 
 // Mock CodeInterface component
-const CodeInterface = ({ content }) => {
+const CodeInterface = ({ content }: { content: string }) => {
   return <div className="whitespace-pre-wrap break-words">{content}</div>;
 };
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  isTyping?: boolean; 
+}
 
 export default function SynapseChat() {
   const [showSplash, setShowSplash] = useState(true);
@@ -27,18 +34,19 @@ export default function SynapseChat() {
   const [selectedHours, setSelectedHours] = useState('');
   const [hasHours, setHasHours] = useState(false);
   const [isHoursFading, setIsHoursFading] = useState(false);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
       content: 'Hi! I\'m Synapse, your AI coding tutor. What would you like to learn today?',
-      timestamp: new Date()
+      timestamp: new Date(),
+      isTyping: false
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
-  const navHeightRef = useRef(0);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navHeightRef = useRef<number>(0);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,14 +76,15 @@ export default function SynapseChat() {
     };
   }, []);
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessage = {
+    const userMessage: Message = {
       role: 'user',
       content: input,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isTyping: false
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -113,7 +122,8 @@ export default function SynapseChat() {
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: data.response,
-        timestamp: new Date()
+        timestamp: new Date(),
+        isTyping: false
       }]);
     } catch (error) {
       console.error('Error:', error);
@@ -128,7 +138,7 @@ export default function SynapseChat() {
     }
   };
 
-  const handleNameSubmit = (e) => {
+  const handleNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isNameFading) return;
     setIsNameFading(true);
@@ -140,7 +150,7 @@ export default function SynapseChat() {
     }, 500);
   };
 
-  const handleLanguageSelect = (langId, langName) => {
+  const handleLanguageSelect = (langId: string, langName: string) => {
     if (isLanguageFading) return;
     setSelectedLanguage(langName);
     setIsLanguageFading(true);
@@ -150,7 +160,7 @@ export default function SynapseChat() {
     }, 500);
   };
 
-  const handleCustomLanguageSubmit = (e) => {
+  const handleCustomLanguageSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customLanguage.trim() || isLanguageFading) return;
     setSelectedLanguage(customLanguage.trim());
@@ -162,7 +172,7 @@ export default function SynapseChat() {
     }, 500);
   };
 
-  const handleDurationSelect = (duration) => {
+  const handleDurationSelect = (duration: string) => {
     if (isDurationFading) return;
     setSelectedDuration(duration);
     setIsDurationFading(true);
@@ -172,7 +182,7 @@ export default function SynapseChat() {
     }, 500);
   };
 
-  const handleCustomDurationSubmit = (e) => {
+  const handleCustomDurationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customDuration.trim() || isDurationFading) return;
     setSelectedDuration(customDuration.trim());
@@ -184,7 +194,7 @@ export default function SynapseChat() {
     }, 500);
   };
 
-  const handleHoursSelect = (hours) => {
+  const handleHoursSelect = (hours: string) => {
     if (isHoursFading) return;
     setSelectedHours(hours);
     setIsHoursFading(true);
@@ -280,7 +290,6 @@ export default function SynapseChat() {
                   </div>
 
                   <div className="mt-6 flex flex-col items-center gap-2">
-                    {/* <p className="text-gray-300 text-sm">Or enter a different language</p> */}
                     <form onSubmit={handleCustomLanguageSubmit} className="flex items-center justify-center gap-2 w-full max-w-md">
                       <input
                         type="text"
@@ -307,7 +316,6 @@ export default function SynapseChat() {
       );
     }
 
-    // Third screen: Select duration
     // Third screen: Select duration
     if (!hasDuration) {
       return (
@@ -391,7 +399,6 @@ export default function SynapseChat() {
                         disabled={isHoursFading}
                         className="p-6 rounded-xl border-2 border-[#ffcad45d] bg-white/5 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-[#ffcad4] hover:bg-white/10 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {/* <div className="text-4xl mb-2">{hour.icon}</div> */}
                         <p className="font-semibold text-white text-lg">{hour.name}</p>
                         <p className="text-gray-300 text-sm mt-1">{hour.description}</p>
                       </button>
@@ -409,7 +416,7 @@ export default function SynapseChat() {
     const handleStart = async () => {
       if (isFadingOut) return;
 
-      const userMessage = {
+      const userMessage: Message = {
         role: 'user',
         content: `I want to learn ${selectedLanguage} in ${selectedDuration}, and I can dedicate ${selectedHours} per day`,
         timestamp: new Date()
@@ -460,7 +467,7 @@ export default function SynapseChat() {
                 <button
                   onClick={handleStart}
                   disabled={isLoading}
-                  className="hero-btn px-8 py-3 rounded-lg text-black shadow-md disabled:opacity-50 disabled:cursor-not-allowed hover:transition-cubic-bezier(0.39, 0.575, 0.565, 1); duration-300 border-1 border-white cursor-pointer"
+                  className="hero-btn px-8 py-3 rounded-lg text-black shadow-md disabled:opacity-50 disabled:cursor-not-allowed hover:transition-cubic-bezier(0.39, 0.575, 0.565, 1) duration-300 border-1 border-white cursor-pointer"
                 >
                   {isLoading ? 'Starting...' : 'Start Learning'}
                 </button>
@@ -471,40 +478,6 @@ export default function SynapseChat() {
       </div>
     );
   }
-
-  // if (!hasStarted) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <div className={`w-full max-w-2xl px-4 ${isLandingFading ? 'animate-fade-out' : 'animate-slide-down'}`}>
-  //         <div className="text-center mb-6">
-  //           <div className="mx-auto mb-4 w-12 h-12 rounded-2xl flex items-center justify-center">
-  //             <Bot className="w-6 h-6 text-white" />
-  //           </div>
-  //           <h2 className="text-2xl font-semibold text-gray-100 tracking-tight">What can I help you build?</h2>
-  //         </div>
-  //         <form onSubmit={sendMessage} className="flex gap-3">
-  //           <input
-  //             ref={inputRef}
-  //             type="text"
-  //             value={input}
-  //             onChange={(e) => setInput(e.target.value)}
-  //             placeholder="Ask anything about coding..."
-  //             disabled={isLoading}
-  //             className="flex-1 px-4 py-4 rounded-xl bg-white/90 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md transition-smooth"
-  //           />
-  //           <button
-  //             type="submit"
-  //             disabled={!input.trim() || isLoading}
-  //             className="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 font-medium shadow-md transition-smooth"
-  //           >
-  //             <Send className="w-5 h-5" />
-  //             Send
-  //           </button>
-  //         </form>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   if (!hasStarted) {
     return (
@@ -548,91 +521,5 @@ export default function SynapseChat() {
       selectedHours={selectedHours}
       initialMessages={messages}
     />
-  );
-
-  return (
-    <div className="flex flex-col h-[90vh]">
-      <div className="chat-container">
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-            {messages.map((message, index) => (
-              <div key={index} className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`user-img w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.role === 'user' ? 'bg-indigo-500' : 'bg-gradient-to-br from-purple-500 to-indigo-600'}`}>
-                  {message.role === 'user' ? (
-                    <User className="w-5 h-5 text-white" />
-                  ) : (
-                    <Bot className="w-5 h-5 text-white" />
-                  )}
-                </div>
-                <div className={`flex-1 max-w-2xl ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                  {message.role === 'assistant' ? (
-                    <div className="backdrop-blur bg-[#ffc8d226] text-white text-sm px-4 py-3 rounded-xl space-y-2">
-                      <CodeInterface content={message.content} />
-                      <p className="text-xs text-[#631330]">
-                        {message.timestamp.toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="inline-block px-4 py-3 rounded-2xl bg-[#631330] text-sm text-white">
-                        <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-1 px-2">
-                        {message.timestamp.toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {isLoading && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-white" />
-                </div>
-                <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
-                  <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        <div className="chatbox-input flex w-full items-center justify-center">
-          <div className="w-3xl border-1 border-[#ffcad45d] rounded-xl backdrop-blur shadow-lg transition-smooth">
-            <div className="mx-auto px-4 py-4">
-              <form onSubmit={sendMessage} className="flex gap-3">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask me anything about coding..."
-                  disabled={isLoading}
-                  className="flex-1 px-4 py-3 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#ffcad45d] focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500 transition-smooth"
-                />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || isLoading}
-                  className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
-                >
-                  <Send className="w-5 h-5" />
-                  Send
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
