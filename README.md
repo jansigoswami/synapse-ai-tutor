@@ -106,7 +106,7 @@ synapse-ai-tutor/
 
 ## 📷 Screenshots
 
-![Chat Interface](./synapse/public/images/main-background.png)
+
 
 ---
 
@@ -126,4 +126,5 @@ This project is licensed under the MIT License.
 
 - Developed by [jansigoswami](https://github.com/jansigoswami)
 - Powered by Next.js, React, and FastAPI
+
 
