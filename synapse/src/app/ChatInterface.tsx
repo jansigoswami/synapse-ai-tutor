@@ -26,7 +26,7 @@ const TypingMarkdown = ({
       const timeout = setTimeout(() => {
         setDisplayedContent(content.slice(0, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
-      }, 20); // Adjust speed here (lower = faster)
+      }, 8); // Adjust speed here (lower = faster)
 
       return () => clearTimeout(timeout);
     } else {
