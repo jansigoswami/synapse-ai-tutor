@@ -103,6 +103,9 @@ synapse-ai-tutor/
 - Make sure the backend server is running at `http://localhost:8000` for full functionality.
 
 ---
+## 🌿Connect with me - 
+
+https://linktr.ee/jansigoswami
 
 ## 📷 Screenshots
 
@@ -126,5 +129,6 @@ This project is licensed under the MIT License.
 
 - Developed by [jansigoswami](https://github.com/jansigoswami)
 - Powered by Next.js, React, and FastAPI
+
 
 
